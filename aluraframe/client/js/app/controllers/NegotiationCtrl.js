@@ -6,36 +6,32 @@ class NegotiationCtrl {
         this._inputDate = $('#data');
         this._inputQuantity = $('#quantidade');
         this._inputValue = $('#valor');
+        this._negotiationList = new NegotiationList();
     }
 
     add(event) {
         event.preventDefault();
 
-        // Version with spread operator
-        let date = new Date(...this._inputDate.value
-            .split('-')
-            .map((item, index) => index == 1 ? item-1 : item)
-            // Alternative with module, which declares 1 for index equal to 1
-            // return item - index % 2
-        );
+        // Add negotiation to list
+        this._negotiationList.add(this._createNegotiation);
+        this._clearForm();
 
-        // Simpler version with split
-        // let dateConverted = new Date(this._inputDate.value.split('-'));
+        console.log(this._negotiationList.negotiations);
+    }
 
-        // Date converts the given array to string with commas delimeters
-        // let dateConverted = new Date(this._inputDate.value.split('-').join(','));
-
-        // Date converted with regex, changing every hyphen to comma
-        // let dateConverted = new Date(this._inputDate.value.replace(/-/g, ','));
-
-        let negotiation = new Negotiation(
-            date,
+    _createNegotiation() {
+        return new Negotiation(
+            DateHelper.txt2date(this._inputDate.value),
             this._inputQuantity.value,
             this._inputValue.value
         );
+    }
 
-        console.log(negotiation);
+    _clearForm() {
+        this._inputDate.value = "";
+        this._inputQuantity.value = 1;
+        this._inputValue.value = 0.0;
 
-        // Add negotiation to list
+        this._inputDate.focus();
     }
 }
