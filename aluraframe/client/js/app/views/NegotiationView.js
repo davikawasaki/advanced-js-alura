@@ -32,15 +32,17 @@ class NegotiationView {
             <tfoot>
                 <td colspan="3"></td>
                 <td>${
+                    model.negotiations.reduce((total, n) => total + n.volume, 0.0)
+
                     // Auto invokable function
                     // IIFE: Immediate invoked function expression
                     // @see: https://imasters.com.br/front-end/javascript/sobre-funcoes-imediatas-javascript-iife/?trace=1519021197&source=single
-                    (function() {
-                        let total = 0;
-                        model.negotiations.forEach(n => total += n.volume );
-                        console.log(total)
-                        return total;
-                    })()
+                    //(function() {
+                    //    let total = 0;
+                    //    model.negotiations.forEach(n => total += n.volume );
+                    //    console.log(total)
+                    //    return total;
+                    //})()
                 }</td>
             </tfoot>
         </table>
