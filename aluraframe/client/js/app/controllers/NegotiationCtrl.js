@@ -7,9 +7,13 @@ class NegotiationCtrl {
         this._inputQuantity = $('#quantidade');
         this._inputValue = $('#valor');
         this._negotiationList = new NegotiationList();
-        this._negotiationView = new NegotiationView($('#negotiationView'));
 
+        this._negotiationView = new NegotiationView($('#negotiationView'));
         this._negotiationView.update(this._negotiationList);
+
+        this._message = new Message();
+        this._messageView = new MessageView($('#messageView'));
+        this._messageView.update(this._message);
     }
 
     add(event) {
@@ -18,6 +22,10 @@ class NegotiationCtrl {
         // Add negotiation to list
         this._negotiationList.add(this._createNegotiation());
         this._negotiationView.update(this._negotiationList);
+
+        this._message.text = 'Negociação adicionada com sucesso!';
+        this._messageView.update(this._message);
+
         this._clearForm();
     }
 
