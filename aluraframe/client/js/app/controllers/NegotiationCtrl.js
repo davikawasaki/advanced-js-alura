@@ -7,16 +7,18 @@ class NegotiationCtrl {
         this._inputQuantity = $('#quantidade');
         this._inputValue = $('#valor');
         this._negotiationList = new NegotiationList();
+        this._negotiationView = new NegotiationView($('#negotiationView'));
+
+        this._negotiationView.update(this._negotiationList);
     }
 
     add(event) {
         event.preventDefault();
 
         // Add negotiation to list
-        this._negotiationList.add(this._createNegotiation);
+        this._negotiationList.add(this._createNegotiation());
+        this._negotiationView.update(this._negotiationList);
         this._clearForm();
-
-        console.log(this._negotiationList.negotiations);
     }
 
     _createNegotiation() {
