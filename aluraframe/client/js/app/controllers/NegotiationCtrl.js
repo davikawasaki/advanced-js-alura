@@ -6,7 +6,16 @@ class NegotiationCtrl {
         this._inputDate = $('#data');
         this._inputQuantity = $('#quantidade');
         this._inputValue = $('#valor');
-        this._negotiationList = new NegotiationList();
+
+        // OBSERVER PATTERN
+        // @see: https://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
+        // Instance of negotiationList passing negotiationView update as anonymous fn
+        // Case 1. Passes this context as params (needs reflection)
+        // this._negotiationList = new NegotiationList(this, function(model) {
+        // Case 2. Passing just model as params (arrow function context is lexical, not dynamic)
+        this._negotiationList = new NegotiationList(model => 
+            this._negotiationView.update(model)
+        );
 
         this._negotiationView = new NegotiationView($('#negotiationView'));
         this._negotiationView.update(this._negotiationList);
@@ -21,12 +30,18 @@ class NegotiationCtrl {
 
         // Add negotiation to list
         this._negotiationList.add(this._createNegotiation());
-        this._negotiationView.update(this._negotiationList);
 
         this._message.text = 'Negociação adicionada com sucesso!';
         this._messageView.update(this._message);
 
         this._clearForm();
+    }
+
+    empty() {
+        this._negotiationList.empty();
+
+        this._message.text = 'Lista de Negociações apagadas com sucesso!';
+        this._messageView.update(this._message);
     }
 
     _createNegotiation() {
