@@ -13,9 +13,38 @@ class NegotiationCtrl {
         // Case 1. Passes this context as params (needs reflection)
         // this._negotiationList = new NegotiationList(this, function(model) {
         // Case 2. Passing just model as params (arrow function context is lexical, not dynamic)
-        this._negotiationList = new NegotiationList(model => 
+
+        /* this._negotiationList = new NegotiationList(model => 
             this._negotiationView.update(model)
-        );
+        ); */
+
+        // PROXY PATTERN
+        // @see: https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+        // Encapsulates the real object to be manipulated. Acts like an interface between the real object and the rest of the code.
+        // It's possible to attach codes beside ones from models, which needs to be executed in updates.
+        let self = this;
+        this._negotiationList = new Proxy(new NegotiationList(), {
+            get(target, prop, receiver) {
+                // Alternative: intercepting methods
+                if(['add', 'empty'].includes(prop) && typeof(target[prop] == typeof(Function))) {
+                    // Changing object function on proxy with a new function, letting the original one intact
+                    // Scope needs to be dynamic
+                    return function() {
+                        console.log(`Intercepting method ${prop}`);
+                        // Calling the original object method from target with arguments passed within his own scope
+                        // Arguments is a implicit variable with access to method args when the method is called
+                        Reflect.apply(target[prop], target, arguments);
+
+                        // Update view with controller scope and model, which is target
+                        // JS method execution order: first get method reference, then apply it with params
+                        self._negotiationView.update(target);
+                    }
+                }
+
+                // Return property value of target
+                return Reflect.get(target, prop, receiver);
+            }
+        });
 
         this._negotiationView = new NegotiationView($('#negotiationView'));
         this._negotiationView.update(this._negotiationList);
