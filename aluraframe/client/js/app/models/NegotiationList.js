@@ -18,4 +18,8 @@ class NegotiationList {
     empty() {
         this._negotiations = [];
     }
+
+    get totalVolume() {
+        return this._negotiations.reduce((total, n) => total + n.volume, 0.0);
+    }
 }
