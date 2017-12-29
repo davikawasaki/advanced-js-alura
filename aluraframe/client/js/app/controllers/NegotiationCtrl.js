@@ -22,11 +22,11 @@ class NegotiationCtrl {
         // @see: https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Proxy
         // Encapsulates the real object to be manipulated. Acts like an interface between the real object and the rest of the code.
         // It's possible to attach codes beside ones from models, which needs to be executed in updates.
-        let self = this;
+        /* let self = this;
         this._negotiationList = new Proxy(new NegotiationList(), {
             get(target, prop, receiver) {
                 // Alternative: intercepting methods
-                if(['add', 'empty'].includes(prop) && typeof(target[prop] == typeof(Function))) {
+                if(['add', 'empty'].includes(prop) && typeof(target[prop]) == typeof(Function)) {
                     // Changing object function on proxy with a new function, letting the original one intact
                     // Scope needs to be dynamic
                     return function() {
@@ -44,14 +44,35 @@ class NegotiationCtrl {
                 // Return property value of target
                 return Reflect.get(target, prop, receiver);
             }
-        });
+        }); */
 
-        this._negotiationView = new NegotiationView($('#negotiationView'));
-        this._negotiationView.update(this._negotiationList);
+        // FACTORY PATTERN
+        // @see: http://robdodson.me/javascript-design-patterns-factory/
+        // Binding between model and view
+        
+        // Unidirectional data-binding
+        // this._negotiationList = ProxyFactory.create(new NegotiationList,
+        //     ['add', 'empty'],
+        //     model => this._negotiationView.update(model));
+        // this._negotiationView = new NegotiationView($('#negotiationView'));
+        // this._negotiationView.update(this._negotiationList);
+        
+        // Data-binding with auto-update
+        this._negotiationList = new Bind(new NegotiationList,
+            new NegotiationView($('#negotiationView')),
+            'add', 'empty');
 
-        this._message = new Message();
-        this._messageView = new MessageView($('#messageView'));
-        this._messageView.update(this._message);
+        // Unidirectional data-binding
+        // this._message = ProxyFactory.create(new Message(),
+        //     ['text'],
+        //     model => this._messageView.update(model));
+        // this._messageView.update(this._message);
+        // this._messageView = new MessageView($('#messageView'));
+
+        // Data-binding with auto-update
+        this._message = new Bind(new Message(),
+        new MessageView($('#messageView')),
+            'text');
     }
 
     add(event) {
@@ -61,7 +82,9 @@ class NegotiationCtrl {
         this._negotiationList.add(this._createNegotiation());
 
         this._message.text = 'Negociação adicionada com sucesso!';
-        this._messageView.update(this._message);
+
+        // Commented with factory proxy pattern use
+        // this._messageView.update(this._message);
 
         this._clearForm();
     }
@@ -70,7 +93,9 @@ class NegotiationCtrl {
         this._negotiationList.empty();
 
         this._message.text = 'Lista de Negociações apagadas com sucesso!';
-        this._messageView.update(this._message);
+
+        // Commented with factory proxy pattern use
+        // this._messageView.update(this._message);
     }
 
     _createNegotiation() {
