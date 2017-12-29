@@ -89,6 +89,21 @@ class NegotiationCtrl {
         this._clearForm();
     }
 
+    import() {
+        let service = new NegotiationService();
+        service.getWeeklyNegotiations((err, negotiations) => {
+            
+            // Error-first pattern
+            if(err) {
+                this._message.text = err;
+                return;
+            }
+
+            negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+            this._message.text = 'Negociações importadas com sucesso!';
+        });
+    }
+
     empty() {
         this._negotiationList.empty();
 
