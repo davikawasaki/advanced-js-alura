@@ -91,17 +91,83 @@ class NegotiationCtrl {
 
     import() {
         let service = new NegotiationService();
-        service.getWeeklyNegotiations((err, negotiations) => {
-            
-            // Error-first pattern
-            if(err) {
-                this._message.text = err;
-                return;
-            }
 
-            negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
-            this._message.text = 'Negociações importadas com sucesso!';
-        });
+        // PROMISE PATTERN WITH ALL NEGOTIATIONS ENCAPSULATED
+        service.getAllNegotiations()
+            .then(negotiations => {
+                negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+            this._message.text = 'Negociações do período importadas com sucesso';
+        })
+        .catch(err => this._message.text = err);  
+
+        // PROMISE PATTERN WITH ASYNC SEQUENCE AND FLAT ARRAY
+        // Promise.all([
+        //     service.getWeeklyNegotiations(),
+        //     service.getLastWeekNegotiations(),
+        //     service.getLastTwoWeekNegotiations()
+        // ]).then(negotiations => {
+        //     negotiations
+        //         // Flatten an array of arrays into one
+        //         .reduce((flatArray, fullArray) => flatArray.concat(fullArray), [])
+        //         .forEach(negotiation => this._negotiationList.add(negotiation));
+        //     this._message.text = 'Negociações da semana obtidas com sucesso!';
+        // }).catch(err => this._message.text = err);
+
+        // PROMISE PATTERN WITHOUT ASYNC SEQUENCE
+        // service.getWeeklyNegotiations()
+        //     .then(negotiations => {
+        //         negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //         this._message.text = 'Negociações da semana obtidas com sucesso!';
+        //     })
+        //     .catch(err => {
+        //         this._message.text = err;
+        //     });
+
+        // service.getLastWeekNegotiations()
+        //     .then(negotiations => {
+        //         negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //         this._message.text = 'Negociações da semana passada obtidas com sucesso!';
+        //     })
+        //     .catch(err => {
+        //         this._message.text = err;
+        //     });
+        
+        // service.getLastTwoWeekNegotiations()
+        //     .then(negotiations => {
+        //         negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //         this._message.text = 'Negociações da semana retrasada obtidas com sucesso!';
+        //     })
+        //     .catch(err => {
+        //         this._message.text = err;
+        //     });
+
+        // CALLBACK PATTERN, WITH CALLBACK HELL AND PYRAMID OF DOOM
+        // service.getWeeklyNegotiations((err, negotiations) => {
+        //     // Error-first pattern
+        //     if(err) {
+        //         this._message.text = err;
+        //         return;
+        //     }
+        //     negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //     service.getLastWeekNegotiations((err, negotiations) => {   
+        //         // Error-first pattern
+        //         if(err) {
+        //             this._message.text = err;
+        //             return;
+        //         }  
+        //         negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //         service.getLastTwoWeekNegotiations((err, negotiations) => {  
+        //             // Error-first pattern
+        //             if(err) {
+        //                 this._message.text = err;
+        //                 return;
+        //             }
+        //             negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
+        //             this._message.text = 'Negociações importadas com sucesso!';
+        //         });
+        //     });
+        // });
+
     }
 
     empty() {
