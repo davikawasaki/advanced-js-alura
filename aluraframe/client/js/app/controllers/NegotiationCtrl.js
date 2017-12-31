@@ -6,6 +6,7 @@ class NegotiationCtrl {
         this._inputDate = $('#data');
         this._inputQuantity = $('#quantidade');
         this._inputValue = $('#valor');
+        this._actualOrder = '';
 
         // OBSERVER PATTERN
         // @see: https://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
@@ -60,7 +61,7 @@ class NegotiationCtrl {
         // Data-binding with auto-update
         this._negotiationList = new Bind(new NegotiationList,
             new NegotiationView($('#negotiationView')),
-            'add', 'empty');
+            'add', 'empty', 'order', 'reverse');
 
         // Unidirectional data-binding
         // this._message = ProxyFactory.create(new Message(),
@@ -177,6 +178,12 @@ class NegotiationCtrl {
 
         // Commented with factory proxy pattern use
         // this._messageView.update(this._message);
+    }
+
+    order(column) {
+        if(this._actualOrder == column) this._negotiationList.reverse();
+        else this._negotiationList.order((a,b) => a[column] - b[column]);
+        this._actualOrder = column;
     }
 
     _createNegotiation() {

@@ -22,4 +22,12 @@ class NegotiationList {
     get totalVolume() {
         return this._negotiations.reduce((total, n) => total + n.volume, 0.0);
     }
+
+    order(criteria) {
+        this._negotiations.sort(criteria);
+    }
+
+    reverse() {
+        this._negotiations.reverse();
+    }
 }
