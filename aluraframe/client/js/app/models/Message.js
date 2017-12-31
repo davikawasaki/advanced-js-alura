@@ -1,8 +1,9 @@
 class Message {
 
     // Default for empty params: ''
-    constructor(text='') {
-        this._text = text;
+    // constructor(text='') {
+    constructor(text) {
+        this._text = text || '';
     }
 
     get text() {

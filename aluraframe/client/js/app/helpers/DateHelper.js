@@ -12,11 +12,12 @@ class DateHelper {
 
     static txt2date(text) {
 
-        if(!/^\d{4}-\d{2}-\d{2}$/.test(text)) throw new Error('Should be on format YYYY-MM-DD!');
+        if(!/\d{2}\/\d{2}\/\d{4}$/.test(text)) throw new Error('Data deve estar no formato dd/mm/aaaa!');
 
         // Version with spread operator
         return new Date(...text
-            .split('-')
+            .split('/')
+            .reverse()
             .map((item, index) => index == 1 ? item-1 : item));
             // Alternative with module, which declares 1 for index equal to 1
             // return item - index % 2

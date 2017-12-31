@@ -79,15 +79,19 @@ class NegotiationCtrl {
     add(event) {
         event.preventDefault();
 
-        // Add negotiation to list
-        this._negotiationList.add(this._createNegotiation());
-
-        this._message.text = 'Negociação adicionada com sucesso!';
-
-        // Commented with factory proxy pattern use
-        // this._messageView.update(this._message);
-
-        this._clearForm();
+        try {
+            // Add negotiation to list
+            this._negotiationList.add(this._createNegotiation());
+    
+            this._message.text = 'Negociação adicionada com sucesso!';
+    
+            // Commented with factory proxy pattern use
+            // this._messageView.update(this._message);
+    
+            this._clearForm();
+        } catch(err) {
+            this._message.text = err;
+        }
     }
 
     import() {
