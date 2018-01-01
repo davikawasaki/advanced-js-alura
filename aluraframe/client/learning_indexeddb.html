@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprendendo IndexedDB</title>
+</head>
+<body>
+    <script src="js/app/models/Negotiation.js"></script>
+    <script>
+        var connection;
+        var openRequest = window.indexedDB.open('aluraframe', 1);
+        // Three possible events: onupgradeneeded, onsuccess, onerror
+        openRequest.onupgradeneeded = e => {
+            console.log('Cria ou altera um banco já existente!');
+
+            let myConnection = e.target.result;
+            // Object Store as NoSQL
+            if(myConnection.objectStoreNames.contains('negotiations')) {
+                myConnection.deleteObjectStore('negotiations');
+            }
+            
+            // Creating objectStore with autoIncrement in id field
+            myConnection.createObjectStore('negotiations', {autoIncrement: true});
+        };
+        openRequest.onsuccess = e => {
+            console.log('Conexão obtida com sucesso!');
+            // Result as IDBDatabase
+            connection = e.target.result;
+        };
+        openRequest.onerror = e => {
+            console.error(e.target.error);
+        };
+
+        function add() {
+            // First, get transaction to an object store
+            let transaction = connection.transaction(['negotiations'], 'readwrite');
+            // Second, get access to a transactional store through a transaction
+            let store = transaction.objectStore('negotiations');
+            let negotiation = new Negotiation(new Date(), 1, 200);
+            // Do an addition request, checking for success or error
+            let request = store.add(negotiation);
+            request.onsuccess = e => {
+                console.log('Negociação incluída com sucesso!');
+            };
+            request.onerror = e => {
+                console.error('Não foi possível incluir a negociação!');
+            };
+        };
+
+        function listAll() {
+            let transaction = connection.transaction(['negotiations'], 'readwrite');
+            let store = transaction.objectStore('negotiations');
+            
+            let negotiations = [];
+            let cursor = store.openCursor();
+            cursor.onsuccess = e => {
+                // Actual pointer
+                let pointer = e.target.result;
+                if(pointer) {
+                    let data = pointer.value;
+                    negotiations.push(new Negotiation(data._date, data._quantity, data._value));
+                    pointer.continue();
+                } else console.log(negotiations);
+            };
+            cursor.onerror = e => {
+                console.error(e.target.error.name);
+            };
+        };
+
+        // add();
+    </script>
+</body>
+</html>
