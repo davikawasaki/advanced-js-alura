@@ -1,3 +1,14 @@
+import {NegotiationList} from '../models/NegotiationList';
+import {Message} from '../models/Message';
+import {Negotiation} from '../models/Negotiation';
+import {NegotiationView} from '../views/NegotiationView';
+import {MessageView} from '../views/MessageView';
+import {NegotiationService} from '../services/NegotiationService';
+import {DateHelper} from '../helpers/DateHelper';
+import {Bind} from '../helpers/Bind';
+import {ConnectionFactory} from '../services/ConnectionFactory';
+import {NegotiationDAO} from '../dao/NegotiationDAO';
+
 class NegotiationCtrl {
 
     constructor() {
@@ -233,4 +244,10 @@ class NegotiationCtrl {
 
         this._inputDate.focus();
     }
+}
+
+let negotiationCtrl = new NegotiationCtrl();
+
+export function currentInstance() {
+    return negotiationCtrl;
 }
