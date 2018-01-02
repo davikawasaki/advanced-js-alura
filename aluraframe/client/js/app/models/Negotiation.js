@@ -1,6 +1,13 @@
-class Negotiation {
+"use strict";
 
-    constructor(date, quantity, value) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Negotiation = function () {
+    function Negotiation(date, quantity, value) {
+        _classCallCheck(this, Negotiation);
+
         // Private properties
         this._date = new Date(date.getTime());
         this._quantity = quantity;
@@ -9,24 +16,33 @@ class Negotiation {
         Object.freeze(this);
     }
 
-    get date() {
-        return new Date(this._date.getTime()); // Returning a copy of this._date object
-    }
+    _createClass(Negotiation, [{
+        key: "isEqual",
+        value: function isEqual(other) {
+            return JSON.stringify(this) == JSON.stringify(other);
+        }
+    }, {
+        key: "date",
+        get: function get() {
+            return new Date(this._date.getTime()); // Returning a copy of this._date object
+        }
+    }, {
+        key: "quantity",
+        get: function get() {
+            return this._quantity;
+        }
+    }, {
+        key: "value",
+        get: function get() {
+            return this._value;
+        }
+    }, {
+        key: "volume",
+        get: function get() {
+            return this._quantity * this._value;
+        }
+    }]);
 
-    get quantity() {
-        return this._quantity;
-    }
-
-    get value() {
-        return this._value;
-    }
-
-    get volume() {
-        return this._quantity * this._value;
-    }
-
-    isEqual(other) {
-        return JSON.stringify(this) == JSON.stringify(other);
-    }
-
-}
+    return Negotiation;
+}();
+//# sourceMappingURL=Negotiation.js.map

@@ -1,6 +1,13 @@
-class NegotiationService {
+'use strict';
 
-    constructor() {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var NegotiationService = function () {
+    function NegotiationService() {
+        _classCallCheck(this, NegotiationService);
+
         this._http = new HttpService();
     }
 
@@ -26,101 +33,108 @@ class NegotiationService {
 
     // PROMISE PATTERN FOR ASYNC REQUESTS WITH HTTP SERVICE
     // @see: https://developers.google.com/web/fundamentals/primers/promises
-    getWeeklyNegotiations() {
-        return this._http
-            .get('negociacoes/semana')
-            .then(negotiations => {
-                return negotiations
-                    .map(obj => new Negotiation(new Date(obj.data), obj.quantidade, obj.valor));
-            })
-            .catch(err => {
+
+
+    _createClass(NegotiationService, [{
+        key: 'getWeeklyNegotiations',
+        value: function getWeeklyNegotiations() {
+            return this._http.get('negociacoes/semana').then(function (negotiations) {
+                return negotiations.map(function (obj) {
+                    return new Negotiation(new Date(obj.data), obj.quantidade, obj.valor);
+                });
+            }).catch(function (err) {
                 console.log(err);
                 throw new Error('Não foi possível obter as negociações da semana!');
             });
-    }
-
-    getLastWeekNegotiations() {
-        return this._http
-            .get('negociacoes/anterior')
-            .then(negotiations => {
-                return negotiations
-                    .map(obj => new Negotiation(new Date(obj.data), obj.quantidade, obj.valor));
-            })
-            .catch(err => {
+        }
+    }, {
+        key: 'getLastWeekNegotiations',
+        value: function getLastWeekNegotiations() {
+            return this._http.get('negociacoes/anterior').then(function (negotiations) {
+                return negotiations.map(function (obj) {
+                    return new Negotiation(new Date(obj.data), obj.quantidade, obj.valor);
+                });
+            }).catch(function (err) {
                 console.log(err);
                 throw new Error('Não foi possível obter as negociações da semana anterior!');
             });
-    }
-
-    getLastTwoWeekNegotiations() {
-        return this._http
-            .get('negociacoes/retrasada')
-            .then(negotiations => {
-                return negotiations
-                    .map(obj => new Negotiation(new Date(obj.data), obj.quantidade, obj.valor));
-            })
-            .catch(err => {
+        }
+    }, {
+        key: 'getLastTwoWeekNegotiations',
+        value: function getLastTwoWeekNegotiations() {
+            return this._http.get('negociacoes/retrasada').then(function (negotiations) {
+                return negotiations.map(function (obj) {
+                    return new Negotiation(new Date(obj.data), obj.quantidade, obj.valor);
+                });
+            }).catch(function (err) {
                 console.log(err);
                 throw new Error('Não foi possível obter as negociações da semana retrasada!');
             });
-    }
-
-    getAllNegotiations() {
-        return Promise.all([
-            this.getWeeklyNegotiations(),
-            this.getLastWeekNegotiations(),
-            this.getLastTwoWeekNegotiations()
-        ]).then(periods => {
-            let negotiations = periods
-                .reduce((data, period) => data.concat(period), []);
-            return negotiations;
-        }).catch(err => {
-            throw new Error(err);
-        });
-    }
-
-    add(negotiation) {
-        return ConnectionFactory
-            .getConnection()
-            .then(connection => new NegotiationDAO(connection))
-            .then(negotiationDAO => negotiationDAO.add(negotiation))
-            .then(() => 'Negociação adicionada com sucesso!')
-            .catch(() => {
-                throw new Error('Não foi possível adicionar a negociação!')
+        }
+    }, {
+        key: 'getAllNegotiations',
+        value: function getAllNegotiations() {
+            return Promise.all([this.getWeeklyNegotiations(), this.getLastWeekNegotiations(), this.getLastTwoWeekNegotiations()]).then(function (periods) {
+                var negotiations = periods.reduce(function (data, period) {
+                    return data.concat(period);
+                }, []);
+                return negotiations;
+            }).catch(function (err) {
+                throw new Error(err);
+            });
+        }
+    }, {
+        key: 'add',
+        value: function add(negotiation) {
+            return ConnectionFactory.getConnection().then(function (connection) {
+                return new NegotiationDAO(connection);
+            }).then(function (negotiationDAO) {
+                return negotiationDAO.add(negotiation);
+            }).then(function () {
+                return 'Negociação adicionada com sucesso!';
+            }).catch(function () {
+                throw new Error('Não foi possível adicionar a negociação!');
             });
 
-        // Since promise pattern has a catch, try/catch is not needed anymore
-        // try {
-        // } catch(err) {
-        //     this._message.text = err;
-        // }
-    }
-
-    empty() {
-        return ConnectionFactory
-            .getConnection()
-            .then(connection => new NegotiationDAO(connection))
-            .then(negotiationDAO => negotiationDAO.deleteAll())
-            .then(() => 'Negociações apagadas com sucesso!')
-            .catch(err => {
+            // Since promise pattern has a catch, try/catch is not needed anymore
+            // try {
+            // } catch(err) {
+            //     this._message.text = err;
+            // }
+        }
+    }, {
+        key: 'empty',
+        value: function empty() {
+            return ConnectionFactory.getConnection().then(function (connection) {
+                return new NegotiationDAO(connection);
+            }).then(function (negotiationDAO) {
+                return negotiationDAO.deleteAll();
+            }).then(function () {
+                return 'Negociações apagadas com sucesso!';
+            }).catch(function (err) {
                 console.error(err);
                 throw new Error('Não foi possível apagar as negociações!');
-            })
-    }
-
-    import(actualList) {
-        // PROMISE PATTERN WITH ALL NEGOTIATIONS ENCAPSULATED
-        return this.getAllNegotiations()
+            });
+        }
+    }, {
+        key: 'import',
+        value: function _import(actualList) {
+            // PROMISE PATTERN WITH ALL NEGOTIATIONS ENCAPSULATED
+            return this.getAllNegotiations()
             // Check if each negotiation was already imported, filtering those who are already there
-            .then(negotiations => 
-                negotiations.filter(negotiation => 
-                    !actualList.some(negotiationFromList => 
-                        negotiation.isEqual(negotiationFromList)))
-            )
-            .catch(err => {
+            .then(function (negotiations) {
+                return negotiations.filter(function (negotiation) {
+                    return !actualList.some(function (negotiationFromList) {
+                        return negotiation.isEqual(negotiationFromList);
+                    });
+                });
+            }).catch(function (err) {
                 console.error(err);
                 throw new Error('Não foi possível buscar negociações para importar!');
-            })
-    }
+            });
+        }
+    }]);
 
-}
+    return NegotiationService;
+}();
+//# sourceMappingURL=NegotiationService.js.map
