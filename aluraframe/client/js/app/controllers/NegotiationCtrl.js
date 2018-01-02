@@ -8,6 +8,18 @@ class NegotiationCtrl {
         this._inputValue = $('#valor');
         this._actualOrder = '';
 
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegotiationDAO(connection))
+            .then(negotiationDAO => negotiationDAO.listAll())
+            .then(negotiations => 
+                negotiations.forEach(negotiation =>
+                    this._negotiationList.add(negotiation)))
+            .catch(err => {
+                console.error(err);
+                this._message.text = err;
+            })
+
         // OBSERVER PATTERN
         // @see: https://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
         // Instance of negotiationList passing negotiationView update as anonymous fn
@@ -77,21 +89,33 @@ class NegotiationCtrl {
     }
 
     add(event) {
-        event.preventDefault();
 
-        try {
-            // Add negotiation to list
-            this._negotiationList.add(this._createNegotiation());
-    
-            this._message.text = 'Negociação adicionada com sucesso!';
-    
-            // Commented with factory proxy pattern use
-            // this._messageView.update(this._message);
-    
-            this._clearForm();
-        } catch(err) {
-            this._message.text = err;
-        }
+        event.preventDefault();
+        
+        ConnectionFactory
+            .getConnection()
+            .then(connection => {
+                let negotiation = this._createNegotiation();
+                new NegotiationDAO(connection)
+                    .add(negotiation)
+                    .then(() => {
+                        // Add negotiation to list
+                        this._negotiationList.add(negotiation);
+                        this._message.text = 'Negociação adicionada com sucesso!';
+                
+                        // Commented with factory proxy pattern use
+                        // this._messageView.update(this._message);
+                
+                        this._clearForm();
+                    })
+            })
+            .catch(err => this._message.text = err);
+
+        // Since promise pattern has a catch, try/catch is not needed anymore
+        // try {
+        // } catch(err) {
+        //     this._message.text = err;
+        // }
     }
 
     import() {
@@ -176,12 +200,20 @@ class NegotiationCtrl {
     }
 
     empty() {
-        this._negotiationList.empty();
-
-        this._message.text = 'Lista de Negociações apagadas com sucesso!';
-
-        // Commented with factory proxy pattern use
-        // this._messageView.update(this._message);
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegotiationDAO(connection))
+            .then(negotiationDAO => negotiationDAO.deleteAll())
+            .then(message => {
+                this._negotiationList.empty();
+                this._message.text = 'Lista de negociações apagadas com sucesso!';
+                // Commented with factory proxy pattern use
+                // this._messageView.update(this._message);
+            })
+            .catch(err => {
+                console.error(err);
+                this._message.text = err;
+            })
     }
 
     order(column) {
@@ -193,8 +225,8 @@ class NegotiationCtrl {
     _createNegotiation() {
         return new Negotiation(
             DateHelper.txt2date(this._inputDate.value),
-            this._inputQuantity.value,
-            this._inputValue.value
+            parseInt(this._inputQuantity.value),
+            parseFloat(this._inputValue.value)
         );
     }
 
