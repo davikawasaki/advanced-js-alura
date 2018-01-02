@@ -79,4 +79,48 @@ class NegotiationService {
         });
     }
 
+    add(negotiation) {
+        return ConnectionFactory
+            .getConnection()
+            .then(connection => new NegotiationDAO(connection))
+            .then(negotiationDAO => negotiationDAO.add(negotiation))
+            .then(() => 'Negociação adicionada com sucesso!')
+            .catch(() => {
+                throw new Error('Não foi possível adicionar a negociação!')
+            });
+
+        // Since promise pattern has a catch, try/catch is not needed anymore
+        // try {
+        // } catch(err) {
+        //     this._message.text = err;
+        // }
+    }
+
+    empty() {
+        return ConnectionFactory
+            .getConnection()
+            .then(connection => new NegotiationDAO(connection))
+            .then(negotiationDAO => negotiationDAO.deleteAll())
+            .then(() => 'Negociações apagadas com sucesso!')
+            .catch(err => {
+                console.error(err);
+                throw new Error('Não foi possível apagar as negociações!');
+            })
+    }
+
+    import(actualList) {
+        // PROMISE PATTERN WITH ALL NEGOTIATIONS ENCAPSULATED
+        return this.getAllNegotiations()
+            // Check if each negotiation was already imported, filtering those who are already there
+            .then(negotiations => 
+                negotiations.filter(negotiation => 
+                    !actualList.some(negotiationFromList => 
+                        negotiation.isEqual(negotiationFromList)))
+            )
+            .catch(err => {
+                console.error(err);
+                throw new Error('Não foi possível buscar negociações para importar!');
+            })
+    }
+
 }
