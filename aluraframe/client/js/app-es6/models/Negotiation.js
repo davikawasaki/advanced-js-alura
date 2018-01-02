@@ -1,4 +1,4 @@
-class Negotiation {
+export class Negotiation {
 
     constructor(date, quantity, value) {
         // Private properties

@@ -1,6 +1,7 @@
-// Data Access Object: API persistence layer for IndexedDB
+import {Negotiation} from '../models/Negotiation';
 
-class NegotiationDAO {
+// Data Access Object: API persistence layer for IndexedDB
+export class NegotiationDAO {
 
     constructor(connection) {
         this._connection = connection;

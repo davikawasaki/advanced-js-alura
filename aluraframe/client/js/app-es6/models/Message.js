@@ -1,4 +1,4 @@
-class Message {
+export class Message {
 
     // Default for empty params: ''
     // constructor(text='') {

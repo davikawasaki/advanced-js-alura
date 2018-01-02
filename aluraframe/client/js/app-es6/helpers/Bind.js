@@ -1,4 +1,6 @@
-class Bind {
+import {ProxyFactory} from '../services/ProxyFactory';
+
+export class Bind {
 
     // REST operator for multiples params as an array string
     // @see: https://www.smashingmagazine.com/2016/07/how-to-use-arguments-and-parameters-in-ecmascript-6/#rest-parameters
