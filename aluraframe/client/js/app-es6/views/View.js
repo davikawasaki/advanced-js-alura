@@ -1,4 +1,4 @@
-class View {
+export class View {
 
     constructor(el) {
         this._el = el;
