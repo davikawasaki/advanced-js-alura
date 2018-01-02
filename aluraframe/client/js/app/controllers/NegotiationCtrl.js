@@ -8,18 +8,6 @@ class NegotiationCtrl {
         this._inputValue = $('#valor');
         this._actualOrder = '';
 
-        ConnectionFactory
-            .getConnection()
-            .then(connection => new NegotiationDAO(connection))
-            .then(negotiationDAO => negotiationDAO.listAll())
-            .then(negotiations => 
-                negotiations.forEach(negotiation =>
-                    this._negotiationList.add(negotiation)))
-            .catch(err => {
-                console.error(err);
-                this._message.text = err;
-            })
-
         // OBSERVER PATTERN
         // @see: https://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
         // Instance of negotiationList passing negotiationView update as anonymous fn
@@ -86,48 +74,61 @@ class NegotiationCtrl {
         this._message = new Bind(new Message(),
         new MessageView($('#messageView')),
             'text');
+
+        // Importing negotiationService
+        this._service = new NegotiationService();
+
+        this._init();
+    }
+
+    _init() {
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegotiationDAO(connection))
+            .then(negotiationDAO => negotiationDAO.listAll())
+            .then(negotiations => 
+                negotiations.forEach(negotiation =>
+                    this._negotiationList.add(negotiation)))
+            .catch(err => {
+                console.error(err);
+                this._message.text = err;
+            });
+
+        setInterval(() => {
+            this.import();
+        }, 3000);
     }
 
     add(event) {
-
+        
         event.preventDefault();
         
-        ConnectionFactory
-            .getConnection()
-            .then(connection => {
-                let negotiation = this._createNegotiation();
-                new NegotiationDAO(connection)
-                    .add(negotiation)
-                    .then(() => {
-                        // Add negotiation to list
-                        this._negotiationList.add(negotiation);
-                        this._message.text = 'Negociação adicionada com sucesso!';
-                
-                        // Commented with factory proxy pattern use
-                        // this._messageView.update(this._message);
-                
-                        this._clearForm();
-                    })
+        let negotiation = this._createNegotiation();
+        new NegotiationService()
+            .add(negotiation)
+            .then(message => {
+                // Add negotiation to list
+                this._negotiationList.add(negotiation);
+                this._message.text = 'Negociação adicionada com sucesso!';
+        
+                // Commented with factory proxy pattern use
+                // this._messageView.update(this._message);
+        
+                this._clearForm();
             })
             .catch(err => this._message.text = err);
 
-        // Since promise pattern has a catch, try/catch is not needed anymore
-        // try {
-        // } catch(err) {
-        //     this._message.text = err;
-        // }
     }
 
     import() {
-        let service = new NegotiationService();
-
-        // PROMISE PATTERN WITH ALL NEGOTIATIONS ENCAPSULATED
-        service.getAllNegotiations()
+        
+        this._service
+            .import(this._negotiationList.negotiations)
             .then(negotiations => {
                 negotiations.forEach(negotiation => this._negotiationList.add(negotiation));
-            this._message.text = 'Negociações do período importadas com sucesso';
-        })
-        .catch(err => this._message.text = err);  
+                this._message.text = 'Negociações do período importadas com sucesso';
+            })
+            .catch(err => this._message.text = err);  
 
         // PROMISE PATTERN WITH ASYNC SEQUENCE AND FLAT ARRAY
         // Promise.all([
@@ -200,20 +201,15 @@ class NegotiationCtrl {
     }
 
     empty() {
-        ConnectionFactory
-            .getConnection()
-            .then(connection => new NegotiationDAO(connection))
-            .then(negotiationDAO => negotiationDAO.deleteAll())
+        this._service
+            .empty()
             .then(message => {
                 this._negotiationList.empty();
-                this._message.text = 'Lista de negociações apagadas com sucesso!';
+                this._message.text = message;
                 // Commented with factory proxy pattern use
                 // this._messageView.update(this._message);
             })
-            .catch(err => {
-                console.error(err);
-                this._message.text = err;
-            })
+            .catch(err => this._message.text = err)
     }
 
     order(column) {
