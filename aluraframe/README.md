@@ -60,7 +60,7 @@ This repository covers code from three [Alura courses](https://cursos.alura.com.
 
 28\. [Event Delegation](https://davidwalsh.name/event-delegate)
 
-## Courses links from Alura
+## REFERENCES: Courses links from Alura
 
 [Curso JavaScript avançado I: ES6, orientação a objetos e padrões de projetos](https://cursos.alura.com.br/course/javascript-es6-orientacao-a-objetos-parte-1)
 
